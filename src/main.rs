@@ -233,15 +233,16 @@ fn main() {{
     for iters in 1u64.. {{
         fuzzer.buf.clear();
         fuzzer.fragment_{}(0);
-        generated += fuzzer.buf.len();
+        // generated += fuzzer.buf.len();
+        generated += 1;
         unique.insert(fuzzer.buf.clone());
 
         // Filter to reduce the amount of times printing occurs
         if (iters & 0xfffff) == 0 {{
             let elapsed = (Instant::now() - it).as_secs_f64();
             let bytes_per_sec = generated as f64 / elapsed;
-            print!("MiB/sec: {{:12.4}} | Unique: {{:10}}\n", 
-                bytes_per_sec / 1024. / 1024., unique.len());
+            print!("MiB/sec: {{:12.4}} | Unique: {{:10}} | Total generated: {{:10}} ({{:4.10}} %)\n", 
+                bytes_per_sec / 1024. / 1024., unique.len(), generated, unique.len() as f64 / generated as f64 * 100.);
         }}
     }}
 }}

@@ -218,6 +218,7 @@ impl GrammarRust {
 #![allow(unused)]
 use std::cell::Cell;
 use std::time::Instant;
+use std::collections::HashSet;
 
 fn main() {{
     let mut fuzzer = Fuzzer {{
@@ -227,17 +228,20 @@ fn main() {{
     
     let mut generated = 0usize;
     let it = Instant::now();
+    let mut unique = HashSet::new();
 
     for iters in 1u64.. {{
         fuzzer.buf.clear();
         fuzzer.fragment_{}(0);
         generated += fuzzer.buf.len();
+        unique.insert(fuzzer.buf.clone());
 
         // Filter to reduce the amount of times printing occurs
         if (iters & 0xfffff) == 0 {{
             let elapsed = (Instant::now() - it).as_secs_f64();
             let bytes_per_sec = generated as f64 / elapsed;
-            print!("MiB/sec: {{:12.4}}\n", bytes_per_sec / 1024. / 1024.);
+            print!("MiB/sec: {{:12.4}} | Unique: {{:10}}\n", 
+                bytes_per_sec / 1024. / 1024., unique.len());
         }}
     }}
 }}
